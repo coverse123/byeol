@@ -23,10 +23,13 @@ auth.onAuthStateChanged(user => {
   } else {
     currentUser = null;
     document.getElementById('authModal').style.display = 'flex';
-    showView('login'); // Por defecto, mostrar login
+    showView('register');
   }
 });
-
+function showView(view) {
+  document.getElementById('loginView').style.display = view === 'login' ? 'block' : 'none';
+  document.getElementById('registerView').style.display = view === 'register' ? 'block' : 'none';
+}
 // =============== REGISTRO ===============
 async function registerUser() {
   const name = document.getElementById('regName').value;
