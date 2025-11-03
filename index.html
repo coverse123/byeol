@@ -11,16 +11,17 @@
   <!-- Modal de autenticación -->
 <div id="authModal" class="modal">
   <!-- Vista de Login -->
-  <div id="loginView" style="display:none;">
+ <div id="loginView" style="display:none;">
     <h2>Iniciar sesión</h2>
     <input type="email" id="loginEmail" placeholder="Email" required />
     <input type="password" id="loginPassword" placeholder="Contraseña" required />
     <button onclick="loginUser()">Iniciar sesión</button>
     <p>¿No tienes cuenta? <a href="#" onclick="showView('register')">Regístrate</a></p>
   </div>
+<div id="authModal" class="modal">
 
   <!-- Vista de Registro -->
-  <div id="registerView" style="display:none;">
+ <div id="registerView" style="display:none;">
     <h2>Registrarse</h2>
     <input type="text" id="regName" placeholder="Tu nombre" required />
     <select id="userRole">
