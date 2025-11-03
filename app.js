@@ -11,68 +11,32 @@ function showView(view) {
   document.getElementById('registerView').style.display = view === 'register' ? 'block' : 'none';
 }
 
-// Estado de autenticación
-auth.onAuthStateChanged(user => {
-  if (user) {
-    currentUser = user;
-    document.getElementById('authModal').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
-    loadUserProfile();
-    loadArtists();
-    loadPosts();
-  } else {
-    currentUser = null;
-    document.getElementById('authModal').style.display = 'flex';
-    showView('register');
-  }
-});
-function showView(view) {
-  document.getElementById('loginView').style.display = view === 'login' ? 'block' : 'none';
-  document.getElementById('registerView').style.display = view === 'register' ? 'block' : 'none';
-}
-// =============== REGISTRO ===============
-async function registerUser() {
-  const name = document.getElementById('regName').value;
-  const email = document.getElementById('regEmail').value;
-  const password = document.getElementById('regPassword').value;
-  const role = document.getElementById('userRole').value;
-
-  if (!name || !email || !password) {
-    alert("Por favor completa todos los campos.");
-    return;
-  }
-
-  try {
-    const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-    await db.collection('users').doc(userCredential.user.uid).set({
-      name,
-      email,
-      role,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-  } catch (error) {
-    alert("Error al registrar: " + error.message);
-  }
+// Mostrar vista principal del modal (con botones sociales)
+function showAuthModal() {
+  document.getElementById('authModal').style.display = 'flex';
+  document.getElementById('loginView').style.display = 'none';
+  document.getElementById('registerView').style.display = 'none';
 }
 
-// =============== INICIO DE SESIÓN ===============
-async function loginUser() {
-  const email = document.getElementById('loginEmail').value;
-  const password = document.getElementById('loginPassword').value;
-
-  if (!email || !password) {
-    alert("Por favor ingresa correo y contraseña.");
-    return;
-  }
-
-  try {
-    await auth.signInWithEmailAndPassword(email, password);
-    // onAuthStateChanged se encargará del resto
-  } catch (error) {
-    alert("Inicio de sesión fallido: " + error.message);
-  }
+// Mostrar vista de login (email/password)
+function showLoginView() {
+  document.getElementById('authModal').style.display = 'flex';
+  document.getElementById('loginView').style.display = 'block';
+  document.getElementById('registerView').style.display = 'none';
 }
 
+// Mostrar vista de registro
+function showRegisterView() {
+  document.getElementById('authModal').style.display = 'flex';
+  document.getElementById('loginView').style.display = 'none';
+  document.getElementById('registerView').style.display = 'block';
+}
+
+// Iniciar sesión con Google
+function signInWithGoogle() {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  auth.signInWithPopup(provider).catch(alert);
+}
 // =============== CARGAR PERFIL ===============
 async function loadUserProfile() {
   if (!currentUser) return;
