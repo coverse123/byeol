@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es" data-wev-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weverse Clon - Tarea</title>
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Modal de registro -->
+  <div id="authModal" class="modal">
+    <div class="modal-content">
+      <h2>Únete a Weverse Clon</h2>
+      <input type="text" id="displayName" placeholder="Tu nombre" required />
+      <select id="userRole">
+        <option value="fan">Soy fan</option>
+        <option value="artist">Soy artista</option>
+      </select>
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="password" placeholder="Contraseña" required />
+      <button onclick="registerUser()">Registrar</button>
+      <p>¿Ya tienes cuenta? <a href="#" onclick="toggleAuthMode()">Inicia sesión</a></p>
+    </div>
+  </div>
+
+  <!-- Interfaz principal -->
+  <div id="app" style="display: none;">
+    <header class="global-header">
+      <h1>Weverse Clon</h1>
+      <button onclick="logout()">Cerrar sesión</button>
+    </header>
+
+    <div class="main-container">
+      <nav class="sidebar">
+        <div>Mis Comunidades</div>
+        <ul id="artistList"></ul>
+        <div>Enlaces</div>
+        <ul>
+          <li><a href="https://weverseshop.io" target="_blank">Weverse Shop</a></li>
+          <li><a href="https://jelly.weverse.io" target="_blank">Jelly</a></li>
+        </ul>
+      </nav>
+
+      <main class="content">
+        <!-- Formulario para crear publicación (solo artistas) -->
+        <div id="postForm" style="display: none;">
+          <textarea id="postContent" placeholder="Escribe tu publicación..."></textarea>
+          <button onclick="createPost()">Publicar</button>
+        </div>
+
+        <!-- Feed de publicaciones -->
+        <div id="feed"></div>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
