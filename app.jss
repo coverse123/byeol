@@ -5,84 +5,105 @@ const db = firebase.firestore();
 
 let currentUser = null;
 
-// UI
-const authModal = document.getElementById('authModal');
-const app = document.getElementById('app');
-const feed = document.getElementById('feed');
-const postForm = document.getElementById('postForm');
-const artistList = document.getElementById('artistList');
+// Mostrar/Ocultar modales
+function showView(view) {
+  document.getElementById('loginView').style.display = view === 'login' ? 'block' : 'none';
+  document.getElementById('registerView').style.display = view === 'register' ? 'block' : 'none';
+}
 
-// Observar estado de autenticación
+// Estado de autenticación
 auth.onAuthStateChanged(user => {
   if (user) {
     currentUser = user;
-    authModal.style.display = 'none';
-    app.style.display = 'block';
-    
-    // Ver rol desde Firestore
-    db.collection('users').doc(user.uid).get().then(doc => {
-      if (doc.exists) {
-        const role = doc.data().role;
-        if (role === 'artist') {
-          postForm.style.display = 'block';
-        }
-      }
-    });
-
+    document.getElementById('authModal').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    loadUserProfile();
     loadArtists();
     loadPosts();
   } else {
-    authModal.style.display = 'flex';
-    app.style.display = 'none';
+    currentUser = null;
+    document.getElementById('authModal').style.display = 'flex';
+    showView('login'); // Por defecto, mostrar login
   }
 });
 
-function toggleAuthMode() {
-  const modal = document.querySelector('.modal-content');
-  const p = modal.querySelector('p');
-  if (p.innerHTML.includes('Registrar')) {
-    p.innerHTML = '¿Ya tienes cuenta? <a href="#" onclick="toggleAuthMode()">Inicia sesión</a>';
-  } else {
-    p.innerHTML = '¿No tienes cuenta? <a href="#" onclick="toggleAuthMode()">Regístrate</a>';
+// =============== REGISTRO ===============
+async function registerUser() {
+  const name = document.getElementById('regName').value;
+  const email = document.getElementById('regEmail').value;
+  const password = document.getElementById('regPassword').value;
+  const role = document.getElementById('userRole').value;
+
+  if (!name || !email || !password) {
+    alert("Por favor completa todos los campos.");
+    return;
+  }
+
+  try {
+    const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+    await db.collection('users').doc(userCredential.user.uid).set({
+      name,
+      email,
+      role,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+  } catch (error) {
+    alert("Error al registrar: " + error.message);
   }
 }
 
-function registerUser() {
-  const name = document.getElementById('displayName').value;
-  const email = document.getElementById('email').value;
-  const password = document.getElementById('password').value;
-  const role = document.getElementById('userRole').value;
+// =============== INICIO DE SESIÓN ===============
+async function loginUser() {
+  const email = document.getElementById('loginEmail').value;
+  const password = document.getElementById('loginPassword').value;
 
-  auth.createUserWithEmailAndPassword(email, password)
-    .then((userCredential) => {
-      return db.collection('users').doc(userCredential.user.uid).set({
-        name,
-        email,
-        role,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
-    })
-    .catch(alert);
+  if (!email || !password) {
+    alert("Por favor ingresa correo y contraseña.");
+    return;
+  }
+
+  try {
+    await auth.signInWithEmailAndPassword(email, password);
+    // onAuthStateChanged se encargará del resto
+  } catch (error) {
+    alert("Inicio de sesión fallido: " + error.message);
+  }
 }
 
+// =============== CARGAR PERFIL ===============
+async function loadUserProfile() {
+  if (!currentUser) return;
+
+  const doc = await db.collection('users').doc(currentUser.uid).get();
+  if (doc.exists) {
+    const data = doc.data();
+    document.getElementById('userGreeting').textContent = `Hola, ${data.name} (${data.role})`;
+    
+    // Mostrar formulario de publicación solo si es artista
+    document.getElementById('postForm').style.display = data.role === 'artist' ? 'block' : 'none';
+  }
+}
+
+// =============== FUNCIONES EXISTENTES (sin cambios) ===============
 function logout() {
   auth.signOut();
 }
 
 function loadArtists() {
-  artistList.innerHTML = '';
+  const list = document.getElementById('artistList');
+  list.innerHTML = '';
   db.collection('users').where('role', '==', 'artist').get().then(snapshot => {
     snapshot.forEach(doc => {
       const li = document.createElement('li');
       li.textContent = doc.data().name;
-      artistList.appendChild(li);
+      list.appendChild(li);
     });
   });
 }
 
 function createPost() {
-  const content = document.getElementById('postContent').value;
-  if (!content.trim()) return;
+  const content = document.getElementById('postContent').value.trim();
+  if (!content) return;
 
   db.collection('posts').add({
     content,
@@ -95,31 +116,25 @@ function createPost() {
 }
 
 function loadPosts() {
+  const feed = document.getElementById('feed');
   feed.innerHTML = '<h2>Publicaciones</h2>';
-  db.collection('posts')
-    .orderBy('createdAt', 'desc')
-    .get()
-    .then(snapshot => {
-      snapshot.forEach(doc => {
-        const post = doc.data();
-        db.collection('users').doc(post.authorId).get().then(userDoc => {
-          const user = userDoc.data();
-          const postEl = document.createElement('div');
-          postEl.className = 'post-card';
-          postEl.innerHTML = `
-            <div class="post-header">
-              <strong class="post-author">${user.name}</strong>
-              <span>${post.authorId === currentUser.uid ? '(tú)' : ''}</span>
-            </div>
-            <p>${post.content}</p>
-            <button class="like-btn" onclick="toggleLike('${doc.id}')">🤍 Me gusta</button>
-          `;
-          feed.appendChild(postEl);
-        });
-      });
-    });
-}
+  db.collection('posts').orderBy('createdAt', 'desc').get().then(snapshot => {
+    snapshot.forEach(async (doc) => {
+      const post = doc.data();
+      const userDoc = await db.collection('users').doc(post.authorId).get();
+      if (!userDoc.exists) return;
 
-function toggleLike(postId) {
-  alert("Función de 'me gusta' simulada. Para guardar likes, se necesita más lógica.");
+      const user = userDoc.data();
+      const postEl = document.createElement('div');
+      postEl.className = 'post-card';
+      postEl.innerHTML = `
+        <div class="post-header">
+          <strong class="post-author">${user.name}</strong>
+          ${post.authorId === currentUser.uid ? '(tú)' : ''}
+        </div>
+        <p>${post.content}</p>
+      `;
+      feed.appendChild(postEl);
+    });
+  });
 }
