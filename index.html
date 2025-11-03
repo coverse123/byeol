@@ -1,28 +1,38 @@
 <!DOCTYPE html>
 <html lang="es" data-wev-theme="dark">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Weverse Clon - Tarea</title>
+<header class="global-header">
+  <h1>Byeol Dance</h1>
+  <span id="userGreeting"></span>
+  <button onclick="logout()">Cerrar sesión</button>
   <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Modal de registro -->
-  <div id="authModal" class="modal">
-    <div class="modal-content">
-      <h2>Únete a Weverse Clon</h2>
-      <input type="text" id="displayName" placeholder="Tu nombre" required />
-      <select id="userRole">
-        <option value="fan">Soy fan</option>
-        <option value="artist">Soy artista</option>
-      </select>
-      <input type="email" id="email" placeholder="Email" required />
-      <input type="password" id="password" placeholder="Contraseña" required />
-      <button onclick="registerUser()">Registrar</button>
-      <p>¿Ya tienes cuenta? <a href="#" onclick="toggleAuthMode()">Inicia sesión</a></p>
-    </div>
+  <!-- Modal de autenticación -->
+<div id="authModal" class="modal">
+  <!-- Vista de Login -->
+  <div id="loginView" style="display:none;">
+    <h2>Iniciar sesión</h2>
+    <input type="email" id="loginEmail" placeholder="Email" required />
+    <input type="password" id="loginPassword" placeholder="Contraseña" required />
+    <button onclick="loginUser()">Iniciar sesión</button>
+    <p>¿No tienes cuenta? <a href="#" onclick="showView('register')">Regístrate</a></p>
   </div>
+
+  <!-- Vista de Registro -->
+  <div id="registerView" style="display:none;">
+    <h2>Registrarse</h2>
+    <input type="text" id="regName" placeholder="Tu nombre" required />
+    <select id="userRole">
+      <option value="fan">Soy fan</option>
+      <option value="artist">Soy artista</option>
+    </select>
+    <input type="email" id="regEmail" placeholder="Email" required />
+    <input type="password" id="regPassword" placeholder="Contraseña" required />
+    <button onclick="registerUser()">Registrarse</button>
+    <p>¿Ya tienes cuenta? <a href="#" onclick="showView('login')">Inicia sesión</a></p>
+  </div>
+</div>
 
   <!-- Interfaz principal -->
   <div id="app" style="display: none;">
