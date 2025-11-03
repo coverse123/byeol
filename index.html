@@ -8,31 +8,51 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Modal de autenticación -->
+<!-- Modal de autenticación -->
 <div id="authModal" class="modal">
-  <!-- Vista de Login -->
- <div id="loginView" style="display:none;">
-    <h2>Iniciar sesión</h2>
-    <input type="email" id="loginEmail" placeholder="Email" required />
-    <input type="password" id="loginPassword" placeholder="Contraseña" required />
-    <button onclick="loginUser()">Iniciar sesión</button>
-    <p>¿No tienes cuenta? <a href="#" onclick="showView('register')">Regístrate</a></p>
-  </div>
-<div id="authModal" class="modal">
+  <div class="modal-content">
+    <h2>¡Inicia sesión en Weverse como te resulte más cómodo!</h2>
 
-  <!-- Vista de Registro -->
- <div id="registerView" style="display:none;">
-    <h2>Registrarse</h2>
-    <input type="text" id="regName" placeholder="Tu nombre" required />
-    <select id="userRole">
-      <option value="fan">Soy fan</option>
-      <option value="artist">Soy artista</option>
-    </select>
-    <input type="email" id="regEmail" placeholder="Email" required />
-    <input type="password" id="regPassword" placeholder="Contraseña" required />
-    <button onclick="registerUser()">Registrarse</button>
-    <p>¿Ya tienes cuenta? <a href="#" onclick="showView('login')">Inicia sesión</a></p>
+    <!-- Botón: Continuar con email -->
+    <button class="social-btn" onclick="showLoginView()">
+      <span class="icon">✉️</span>
+      Continuar con email
+    </button>
+
+    <!-- Botón: Continuar con Google -->
+    <button class="social-btn" onclick="signInWithGoogle()">
+      <span class="icon">🟢</span>
+      Continuar con Google
+    </button>
+
+    <p style="text-align: center; margin-top: 20px;">
+      ¿Es tu primera vez en Weverse? 
+      <a href="#" onclick="showRegisterView()">Registro de cuenta</a>
+    </p>
   </div>
+</div>
+
+<!-- Vista de Login (email/password) -->
+<div id="loginView" class="modal-content" style="display:none;">
+  <h2>Iniciar sesión</h2>
+  <input type="email" id="loginEmail" placeholder="Email" required />
+  <input type="password" id="loginPassword" placeholder="Contraseña" required />
+  <button onclick="loginUser()">Iniciar sesión</button>
+  <p><a href="#" onclick="showAuthModal()">Volver</a></p>
+</div>
+
+<!-- Vista de Registro -->
+<div id="registerView" class="modal-content" style="display:none;">
+  <h2>Registrarse</h2>
+  <input type="text" id="regName" placeholder="Tu nombre" required />
+  <select id="userRole">
+    <option value="fan">Soy fan</option>
+    <option value="artist">Soy artista</option>
+  </select>
+  <input type="email" id="regEmail" placeholder="Email" required />
+  <input type="password" id="regPassword" placeholder="Contraseña" required />
+  <button onclick="registerUser()">Registrarse</button>
+  <p><a href="#" onclick="showAuthModal()">Volver</a></p>
 </div>
 
   <!-- Interfaz principal -->
